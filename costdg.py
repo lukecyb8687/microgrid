@@ -88,12 +88,12 @@ def costAnalysisDG(Pg,
 
       yearlyFuelCost = []
       for elem in range(1,N_years+1):
-        fuelConsumptionResult = []  
+        fuelConsumptionResult = [] #L/hr 
         for i in range(8760*(elem-1) , 8760*elem):
             if Pg[i] > 0.25*genNomPower:
                 fCon = fuelCostGrad*Pg[i] + fuelCostIntercept
                 fuelConsumptionResult.append(fCon)
-        total_fuel_consumption_year = sum(fuelConsumptionResult)
+        total_fuel_consumption_year = sum(fuelConsumptionResult)/N
         total_fuel_cost = fuelCost * total_fuel_consumption_year
         yearlyFuelCost.append(total_fuel_cost)
       
