@@ -14,10 +14,10 @@ The aim is to 1) Minimize the cost function (Total cost of PV+Battery+Generator)
                   - 📑 auxilliaryCostFunctions.py
                   - 📑 batteryCost.py
               - 📁 pv
-                  - 📑
+                  - 📑 costpv.py
                   - 📑
               - 📁 diesel
-                  - 📑
+                  - 📑 costdg.py
                   - 📑
               - 📁 windmill
                   - 📑
