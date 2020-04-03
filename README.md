@@ -8,6 +8,7 @@ The aim is to 1) Minimize the cost function (Total cost of PV+Battery+Generator)
       - 📁 dispatching
           - 📑 dispatchingStrategyFunction.py
       - 📁 costs
+          - 📑 totalCost.py (THE cost function that the optimizer will try to minimize)
           - 📁 dollars
               - 📁 battery
                   - 📑 auxilliaryCostFunctions.py
@@ -23,5 +24,4 @@ The aim is to 1) Minimize the cost function (Total cost of PV+Battery+Generator)
                   - 📑
           - 📁 carbon (afterwards)
   - 📁 optimizer
-  - 📁 communication (the functions that ensure the communication between the optimizer and the simulator)
   - 📑 README.md
