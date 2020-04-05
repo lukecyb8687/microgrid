@@ -5,7 +5,7 @@ In most places (in developped countries at least), people get their energy from 
 The power needs of a small island are obviously not that of a whole region, so nuclear power plants can be discarded from the beginning, water dams as well. It usually boils down to **a few renewable energy production sites and a diesel generator** to ensure steady energy production (when the sun sets, and the wind stops to blow, mainly).
 
 However, before picking your hammer and your screw driver, you must precisely know the dimensions of your micro grid : _What is the power demand on the grid?_, _How much sun and wind ressources can we reckon with?_, _How many PVs and windmills should we build?_, _How big should our batteries be?_, etc.
-All these questions are subject to **optimization** : there are multile costs to optimize but mainly the **regular cost** 💸 and the **environmental cost** ⛽ captured with the carbon dioxyde emissions.
+All these questions are subject to **optimization** : there are multile costs to optimize but mainly the **regular cost** 💸 and the **environmental cost** ⛽ captured inside the carbon dioxyde emissions.
 
 Unfailingly, this leads to a [multi-objective optimization problem](#https://en.wikipedia.org/wiki/Multi-objective_optimization) where variables are merely the sizes of each installation (how much power supplied by each of the energy production sites).
 
@@ -57,8 +57,7 @@ With regard to the dispatch, we can adopt _two different dispatching strategies_
 
 | Load following                                                                                                                                                                                                                                                                                                            | Cycle charging |
 | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :------------- |
-| When renewable energies don't suffice to provide enough energy to the grid, we might want to turn on the dg. If we follow a load following strategy, we first check if there's enough energy in the battery to complete the energy supply. If not, we turn on the dg at a pace such that it **precisely meets the load**. |
-| The case-study is exactly the same as the previous one, but this time, instead of turning on the dg at a lower pace, we turn it on at rate such that it both meets the load and the power needed to fully charge the battery.                                                                                             |
+| When renewable energies don't suffice to provide enough energy to the grid, we might want to turn on the dg. If we follow a load following strategy, we first check if there's enough energy in the battery to complete the energy supply. If not, we turn on the dg at a pace such that it **precisely meets the load**. | The case-study is exactly the same as the previous one, but this time, instead of turning on the dg at a lower pace, we turn it on at rate such that it both meets the load and the power needed to fully charge the battery. |
 
 <!--
 #### Load following
@@ -78,7 +77,7 @@ Whether we chose one strategy or the other, the dispatching algorithm will compu
 The cost of the battery is calculated with the following formula :
 
 ```latex
-$total \: cost = investment \: cost + (replacement \: cost - salvage \: cost) + operating \: cost$
+total cost = investment cost + (replacement cost - salvage cost) + operating cost
 ```
 
 where :
