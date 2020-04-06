@@ -84,12 +84,26 @@ where :
 
 - The investment cost is basically the price of your batteries
 - The replacement cost is the price of the batteries multiplied by the number of times you should replace them over the whole project's lifespan
+where :
 - The salvage cost is the price at which you could expect to sell your batteries at the end of the project, considering their remaining lifetime
 - The operating cost is the price you pay for your workforce to operate and maintain the batteries
 
 The battery cost relies on the dispatch described above. Indeed, the dispatch heavily impacts the battery throughput (how much energy flows through the battery) and therefore its **lifetime** and consequently the number of replacements and therefore : **the cost**.
 
 #### Diesel generator
+The cost of the Diesel generator is calculated with the following formula :
+
+```latex
+total cost = capital cost + (replacement cost - salvage cost) + operatiion & maintenance cost + fuel cost
+```
+
+where :
+
+- The capital cost is the inital purchase price of the diesel generator
+- The replacement cost is the cost of replacing the generator at the end of its lifetime
+- The operational and maintenance cost is the annual cost of operating and maintaining the generator
+- The salvage cost is the price at which you could expect to sell your diesel generator at the end of the project, considering their remaining lifetime
+- The fuel cost is the price of fuel consumption according to the market price of diesel fuel.
 
 #### Photo Voltaic Pannels
 
