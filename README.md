@@ -22,7 +22,7 @@ Below is the architecture of our project. it is subdivided in multiple packages 
 - 📁 simulator
   - 📑 dollarCost.py
   - 📁 dispatching
-    - 📑 dispatchingStrategyFunction.py
+    - 📑 dispatchingstrategy.py
   - 📁 costs
     - 📁 dollars
       - 📁 battery
