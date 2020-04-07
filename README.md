@@ -29,15 +29,16 @@ Below is the architecture of our project. it is subdivided in multiple packages 
         - 📑 auxilliaryCostFunctions.py
         - 📑 batteryCost.py
       - 📁 pv
-        - 📑 costpv.py
+        - 📑 pvCost.py
         - 📑
       - 📁 diesel
-        - 📑 costdg.py
+        - 📑 dgCost.py
         - 📑
       - 📁 windmill
+        - 📑 windCost.py
         - 📑
-        - 📑
-    - 📁 carbon (afterwards)
+    - 📁 carbon 
+        - 📑 costCarbon.py  
 - 📁 optimizer
 - 📑 README.md
 
@@ -94,7 +95,7 @@ The battery cost relies on the dispatch described above. Indeed, the dispatch he
 The cost of the Diesel generator is calculated with the following formula :
 
 ```latex
-total cost = capital cost + (replacement cost - salvage cost) + operatiion & maintenance cost + fuel cost
+total cost = capital cost + (replacement cost - salvage cost) + operation & maintenance cost + fuel cost
 ```
 
 where :
@@ -106,8 +107,31 @@ where :
 - The fuel cost is the price of fuel consumption according to the market price of diesel fuel.
 
 #### Photo Voltaic Pannels
+The cost of the PV is calculated with the following formula :
+
+```latex
+total cost = capital cost + (replacement cost - salvage cost) + operation & maintenance cost 
+```
+
+where :
+
+- The capital cost is the inital purchase price of the PV
+- The replacement cost is the cost of replacing the PV at the end of its lifetime
+- The operational and maintenance cost is the annual cost of operating and maintaining the PV
+- The salvage cost is the price at which you could expect to sell your PV at the end of the project, considering their remaining lifetime
+
 
 #### Wind turbines
+
+#### CO2 emissions
+
+The inputs into costCarbon.py module would be the same as the inputs into dollarsCost.py module. The output of the costCarbon.emissionCO2() function would be the average emission of CO2 (kgCO2e/h) across the entire project lifespan.
+
+The value of the output (kgCO2e/h) depends on:
+        - The size of the generator
+        - The storage capacity of the battery
+        - The nominal power rating of the PV
+        - The dispatch strategy being used
 
 ## Optimizer
 
