@@ -5,10 +5,10 @@ Created on Mon Apr  6 12:44:32 2020
 @author: bastien velitchkine
 """
 import numpy as np
-from dispatchingStrategy import dispatchingStrategy
+from . import dispatchingStrategy
+# dispatchingStrategy 
 
-def dispatchingLoop(timeStep, netLoad, batteryInitialStorage,
-                    specifications, strategy):
+def dispatchingLoop(timeStep, netLoad, batteryInitialStorage, specifications, strategy):
     """
     INPUT:
         - timeStep : float, the time step used to compute the net load in hours
