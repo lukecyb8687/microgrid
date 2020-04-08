@@ -86,7 +86,7 @@ def dollarCost(gridComponents, timeStep, loadVector, projectDuration, discountRa
     # BATTERY COST
     timeVariables = [timeStep, projectDuration]
     costVariables = [gridComponents["battery"]["replacementCost"], gridComponents["battery"]["operationalCost"], gridComponents["battery"]["capitalCost"]]
-    batteryVariables = [gridComponents["battery"]["maxThroughput"], gridComponents["battery"]["lifetime"]]
+    batteryVariables = [gridComponents["battery"]["maxThroughput"] * gridComponents["battery"]["maxStorage"], gridComponents["battery"]["lifetime"]]
     battery = batteryCost(batteryPowerVector, discountRate, timeVariables, costVariables, batteryVariables)
     
     # DIESEL GENERATOR COST
