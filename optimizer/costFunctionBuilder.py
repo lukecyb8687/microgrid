@@ -4,8 +4,10 @@ Created on Tue Apr  7 11:09:27 2020
 
 @author: bastien velitchkine
 """
-
-from simulator.dollarCost import dollarCost
+import os
+os.chdir("../simulator")
+from costs.dollars.dollarCost import dollarCost
+from costs.carbon.carbonCost import carbonCost
 
 def costFunctionBuilder(gridComponents, timeStep, loadVector, projectDuration, discountRate, strategy):
     """
@@ -13,7 +15,7 @@ def costFunctionBuilder(gridComponents, timeStep, loadVector, projectDuration, d
         - gridComponents : 
                             {
                                 "battery" : {
-                                                "initialStorage": float, the battery initial energy storage (kWh),
+                                                "initialStorage": float between 0 and 1, the battery initial energy storage as percentage of the maximum storage capacity,
                                                 "maxInputPow": float, the maximum charging power of the battery (kW),
                                                 "maxOutputPow": float, the maximum discharging power of the battery (kW),
                                                 "SOC_min": float, the minimum amount of energy that can be stored in the battery (kWh),
@@ -54,6 +56,18 @@ def costFunctionBuilder(gridComponents, timeStep, loadVector, projectDuration, d
     
     newFunction = lambda battMaxStorage, genMaxPower, pvMaxPower: [
                                                                     dollarCost(
+                                                                        {
+                                                                            "battery": {
+                                                                                **gridComponents["battery"], "maxStorage": battMaxStorage
+                                                                            },
+                                                                            "diesel": {
+                                                                                **gridComponents["diesel"], "maxPower": genMaxPower
+                                                                            },
+                                                                            "photovoltaic": {
+                                                                                **gridComponents["photovoltaic"], "maxPower": pvMaxPower
+                                                                            }
+                                                                        }, timeStep, loadVector, projectDuration, discountRate, strategy),
+                                                                        carbonCost(
                                                                         {
                                                                             "battery": {
                                                                                 **gridComponents["battery"], "maxStorage": battMaxStorage

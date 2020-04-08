@@ -81,28 +81,9 @@ def optimizer(fixedParameters, costFunctions, constraints):
                         }
                             
         }                                                    
-    """
-#    def costFunctions(vars):
-#        """
-#        INPUT:
-#            - vars: list of 
-#                - battMaxStorage: float, the battery storage capacity (kWh)
-#                - genMaxPow: float, the generator maximum power (kW)
-#                - pvMaxPow: float, the pv maximum power (kW)    
-#        """
-#        function = costFunctionBuilder(fixedParameters["gridComponents"], fixedParameters["timeStep"], fixedParameters["loadVector"], fixedParameters["projectDuration"], fixedParameters["discountRate"], fixedParameters["strategy"])(vars[0], vars[1], vars[2])
-#        constraintExpressions = [
-#                                    vars[0] - constraints["battery"]["lowerBound"],
-#                                    constraints["battery"]["upperBound"] - vars[0],
-#                                    vars[1] - constraints["diesel"]["lowerBound"],
-#                                    constraints["diesel"]["upperBound"] - vars[0],
-#                                    vars[2] - constraints["photovoltaic"]["lowerBound"],
-#                                    constraints["photovoltaic"]["upperBound"] - vars[2],
-#                                ]
-#        return function, constraintExpressions
-        
+    """        
     
-    problem = Problem(3, 1, 6)
+    problem = Problem(3, 2, 6)
     problem.types[:] = [Real(constraints["battery"]["lowerBound"], constraints["battery"]["upperBound"]), Real(constraints["diesel"]["lowerBound"], constraints["diesel"]["upperBound"]), Real(constraints["photovoltaic"]["lowerBound"], constraints["photovoltaic"]["upperBound"])]
     problem.function = costFunctionBuilder(fixedParameters["gridComponents"], fixedParameters["timeStep"], fixedParameters["loadVector"], fixedParameters["projectDuration"], fixedParameters["discountRate"], fixedParameters["strategy"])(vars[0], vars[1], vars[2])
     
@@ -112,3 +93,8 @@ def optimizer(fixedParameters, costFunctions, constraints):
     # display the results
     for solution in algorithm.result:
         print(solution.objectives)
+        
+def optimizerTest():
+    """
+    A simple function to test the function `optimizer`
+    """

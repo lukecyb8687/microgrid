@@ -26,7 +26,7 @@ def dollarCost(gridComponents, timeStep, loadVector, projectDuration, discountRa
                             {
                                 "battery" : {
                                                 "maxStorage": float, the battery capacity storage (kWh),
-                                                "initialStorage": float, the battery initial energy storage (kWh),
+                                                "initialStorage": float between 0 and 1, the battery initial energy storage as a percentage of its maximum storage capacity,
                                                 "maxInputPow": float, the maximum charging power of the battery (kW),
                                                 "maxOutputPow": float, the maximum discharging power of the battery (kW),
                                                 "SOC_min": float, the minimum amount of energy that can be stored in the battery (kWh),
@@ -70,7 +70,7 @@ def dollarCost(gridComponents, timeStep, loadVector, projectDuration, discountRa
     
     # Now we need to run the dispatching loop
     specifications = [gridComponents["battery"]["maxStorage"], gridComponents["diesel"]["maxPower"], gridComponents["battery"]["maxInputPow"], gridComponents["battery"]["maxOutputPow"], gridComponents["battery"]["SOC_min"]]
-    batteryInitialStorage = gridComponents["battery"]["initialStorage"]
+    batteryInitialStorage = gridComponents["battery"]["initialStorage"] * gridComponents["battery"]["maxStorage"]
     dispatchingResult = dispatchingLoop(timeStep, netLoadVector, batteryInitialStorage, specifications, strategy)
     
     # Now we extract the battery storage at each time step as well as the power of the dg at each time step
