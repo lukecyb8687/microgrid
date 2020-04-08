@@ -5,7 +5,7 @@ Created on Fri Apr  3 14:53:02 2020
 @author: bastien velitchkine
 """
 
-from costs.dollars.battery.auxilliaryCostFunctions import batteryLifeTime, totalReplacementCost, operatingCost, remainingHours, salvageCost
+from battery.auxilliaryCostFunctions import batteryLifeTime, totalReplacementCost, operatingCost, remainingHours, salvageCost
 
 def batteryCost(powerTimeVector, discountRate, timeVariables, costVariables,
                 batteryVariables):

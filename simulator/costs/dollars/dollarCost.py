@@ -8,12 +8,16 @@ Edited on Tues Apr 7 07:19:43 2020
 
 @author: yun bin choh
 """
-
-from costs.dollars.battery.batteryCost import batteryCost
-from costs.dollars.dg.dgCost import dgCost
-from costs.dollars.pv.pvCost import pvCost
-from dispatching.dispatchingLoop import dispatchingLoop
 import numpy as np
+
+from battery.batteryCost import batteryCost
+from dg.dgCost import dgCost
+from pv.pvCost import pvCost
+
+import os
+os.chdir("../..")
+from dispatching.dispatchingLoop import dispatchingLoop
+
 
 def dollarCost(gridComponents, timeStep, loadVector, projectDuration, discountRate, strategy):
     """
