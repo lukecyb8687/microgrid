@@ -69,7 +69,11 @@ def dollarCost(gridComponents, timeStep, loadVector, projectDuration, discountRa
     netLoadVector = loadVector - pvPowerVector
     
     # Now we need to run the dispatching loop
-    specifications = [gridComponents["battery"]["maxStorage"], gridComponents["diesel"]["maxPower"], gridComponents["battery"]["maxInputPow"], gridComponents["battery"]["maxOutputPow"], gridComponents["battery"]["SOC_min"]]
+    battMaxInputPow = gridComponents["battery"]["maxInputPow"] * gridComponents["battery"]["maxStorage"]
+    battMaxOutputPow = gridComponents["battery"]["maxOutputPow"] * gridComponents["battery"]["maxStorage"]
+    SOC_min = gridComponents["battery"]["SOC_min"] * gridComponents["battery"]["maxStorage"]
+    
+    specifications = [gridComponents["battery"]["maxStorage"], gridComponents["diesel"]["maxPower"], battMaxInputPow, battMaxOutputPow, SOC_min]
     batteryInitialStorage = gridComponents["battery"]["initialStorage"] * gridComponents["battery"]["maxStorage"]
     dispatchingResult = dispatchingLoop(timeStep, netLoadVector, batteryInitialStorage, specifications, strategy)
     
