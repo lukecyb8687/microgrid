@@ -4,6 +4,60 @@ Created on Tue Apr  7 12:24:20 2020
 
 @author: bastien velitchkine
 """
+import time
+
+#def batteryManagement(batteryInputPower, battMaxInputPow, battMaxOutputPow, battMaxStorage, batteryStorage, timeStep):
+#    """
+#    The function returns the amount of energy stored in the battery by the end of the time period given charge/discharge
+#    """
+#    # batteryInputPower Positive (inwards flow into battery)
+#    if batteryInputPower <= battMaxInputPow and batteryInputPower >= 0:
+#        chargingPower = batteryInputPower
+#        if (battMaxStorage - batteryStorage) >= chargingPower * timeStep:
+#            newBattStorage = batteryStorage + chargingPower * timeStep
+#        else:
+#            newBattStorage = battMaxStorage
+#
+#    # batteryInputPower Positive (inwards flow into battery)
+#    if batteryInputPower > battMaxInputPow and batteryInputPower >= 0:
+#        chargingPower = battMaxInputPow
+#        if (battMaxStorage - batteryStorage) >= chargingPower * timeStep:
+#            newBattStorage = batteryStorage + chargingPower * timeStep
+#        else:
+#            newBattStorage = battMaxStorage
+#
+#    # batteryInputPower Positive (outwards flow into battery)
+#    if batteryInputPower < 0 and abs(batteryInputPower) <= battMaxOutputPow:
+#        dischargingPower = batteryInputPower
+#        if (batteryStorage + dischargingPower*timeStep) < 0:
+#            newBattStorage = 0
+#        else:
+#          newBattStorage = batteryStorage + dischargingPower*timeStep
+#          
+#    # batteryInputPower Positive (outwards flow into battery)
+#    if batteryInputPower < 0 and abs(batteryInputPower) > battMaxOutputPow:
+#        dischargingPower = -battMaxInputPow
+#        if (batteryStorage + dischargingPower*timeStep) < 0:
+#            newBattStorage = 0
+#        else:
+#          newBattStorage = batteryStorage + dischargingPower*timeStep
+#
+#    return newBattStorage
+#
+#def generatorManagement(powerNeeded, newBattStorage, genMaxPow, battMaxInputPow, battMaxStorage, timeStep, strategy):
+#    """
+#    The function tells us the power at which the generator should work as well as the energy stored in the battery by the end of the 
+#    time period
+#    """
+#    if strategy == "1":
+#        generatorPow = round(min(genMaxPow, powerNeeded), 3)
+#        return [generatorPow, newBattStorage]
+#    if strategy == "2":
+#        chargingPow = min(battMaxInputPow, (battMaxStorage - newBattStorage)/timeStep)
+#        generatorPow = round(
+#            min(powerNeeded + chargingPow, genMaxPow), 3)
+#        newBattStorage += chargingPow * timeStep
+#        return [generatorPow, newBattStorage]
 
 def dispatchingStrategy(powerVariables, energyVariables,
                         componentSpecifications, strategy):
@@ -34,7 +88,8 @@ def dispatchingStrategy(powerVariables, energyVariables,
     strategy, the function yields the power at which the generator had to function to meet the requirements of the load, as well 
     as the new battery storage. Ultimately, this function will be called after each step forward in time.
     """
-
+    debut = time.time()
+    
     def batteryManagement(batteryInputPower):
         """
         The function returns the amount of energy stored in the battery by the end of the time period given charge/discharge
@@ -98,7 +153,9 @@ def dispatchingStrategy(powerVariables, energyVariables,
     # We check whether we produce more than needed or not
     if netLoad <= 0:
         newBattStorage = batteryManagement(abs(netLoad))
+#        newBattStorage = batteryManagement(abs(netLoad), battMaxInputPow, battMaxOutputPow, battMaxStorage, batteryStorage, timeStep)
         generatorPower = 0
+#        print(time.time() - debut)
         return [generatorPower, round(newBattStorage, 3)]
     else:
         dischargingPow = min(netLoad, (batteryStorage - SOC_min) / timeStep, battMaxOutputPow)
@@ -110,5 +167,7 @@ def dispatchingStrategy(powerVariables, energyVariables,
         else:
             powerNeeded = netLoad - dischargingPow
             res = generatorManagement(powerNeeded, newBattStorage)
+#            res = generatorManagement(powerNeeded, newBattStorage, genMaxPow, battMaxInputPow, battMaxStorage, timeStep, strategy)
+#        print(time.time() - debut)
         return res
 
