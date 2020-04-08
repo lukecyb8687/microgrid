@@ -5,8 +5,7 @@ Created on Mon Apr  6 12:44:32 2020
 @author: bastien velitchkine
 """
 import numpy as np
-from . import dispatchingStrategy
-# dispatchingStrategy 
+from simulator.dispatching.dispatchingStrategy import dispatchingStrategy
 
 def dispatchingLoop(timeStep, netLoad, batteryInitialStorage, specifications, strategy):
     """

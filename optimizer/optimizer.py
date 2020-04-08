@@ -83,12 +83,12 @@ def optimizer(fixedParameters, costFunctions, constraints):
         }                                                    
     """        
     
-    problem = Problem(3, 2, 6)
+    problem = Problem(3, 2)
     problem.types[:] = [Real(constraints["battery"]["lowerBound"], constraints["battery"]["upperBound"]), Real(constraints["diesel"]["lowerBound"], constraints["diesel"]["upperBound"]), Real(constraints["photovoltaic"]["lowerBound"], constraints["photovoltaic"]["upperBound"])]
     problem.function = costFunctionBuilder(fixedParameters["gridComponents"], fixedParameters["timeStep"], fixedParameters["loadVector"], fixedParameters["projectDuration"], fixedParameters["discountRate"], fixedParameters["strategy"])(vars[0], vars[1], vars[2])
     
     algorithm = NSGAII(problem)
-    algorithm.run(1000)
+    algorithm.run(10)
     
     # display the results
     for solution in algorithm.result:

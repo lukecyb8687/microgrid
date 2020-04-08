@@ -6,8 +6,8 @@ Created on Tue Apr  7 11:09:27 2020
 """
 import os
 os.chdir("../simulator")
-from costs.dollars.dollarCost import dollarCost
-from costs.carbon.carbonCost import carbonCost
+from simulator.costs.dollars.dollarCost import dollarCost
+from simulator.costs.carbon.carbonCost import carbonCost
 
 def costFunctionBuilder(gridComponents, timeStep, loadVector, projectDuration, discountRate, strategy):
     """

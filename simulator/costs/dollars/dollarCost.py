@@ -10,13 +10,10 @@ Edited on Tues Apr 7 07:19:43 2020
 """
 import numpy as np
 
-from battery.batteryCost import batteryCost
-from dg.dgCost import dgCost
-from pv.pvCost import pvCost
-
-import os
-os.chdir("../..")
-from dispatching.dispatchingLoop import dispatchingLoop
+from simulator.costs.dollars.battery.batteryCost import batteryCost
+from simulator.costs.dollars.dg.dgCost import dgCost
+from simulator.costs.dollars.pv.pvCost import pvCost
+from simulator.dispatching.dispatchingLoop import dispatchingLoop
 
 
 def dollarCost(gridComponents, timeStep, loadVector, projectDuration, discountRate, strategy):
