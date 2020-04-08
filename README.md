@@ -19,28 +19,29 @@ What packages does the user need ? (e.g numpy, pymo, ...)
 
 Below is the architecture of our project. it is subdivided in multiple packages and modules that all lead one main function, the one that will help the end user in his task of properly designing the micro-grid.
 
-- 📁 simulator
-  - 📑 dollarCost.py
-  - 📁 dispatching
-    - 📑 dispatchingstrategy.py
-  - 📁 costs
-    - 📁 dollars
-      - 📁 battery
-        - 📑 auxilliaryCostFunctions.py
-        - 📑 batteryCost.py
-      - 📁 pv
-        - 📑 pvCost.py
-        - 📑
-      - 📁 diesel
-        - 📑 dgCost.py
-        - 📑
-      - 📁 windmill
-        - 📑 windCost.py
-        - 📑
-    - 📁 carbon 
-        - 📑 costCarbon.py  
 - 📁 optimizer
+  - 📑 optimizer.py
+  - 📑 costFunctionBuilder.py
+  - 📁 simulator
+    - 📁 dispatching
+      - 📑 dispatchingLoop.py
+      - 📑 dispatchingStrategy.py
+    - 📁 costs
+      - 📁 dollars
+        - 📑 dollarCost.py
+        - 📁 battery
+          - 📑 auxilliaryCostFunctions.py
+          - 📑 batteryCost.py
+        - 📁 pv
+          - 📑 pvCost.py
+        - 📁 diesel
+          - 📑 dgCost.py
+        - 📁 windmill
+          - 📑 windCost.py
+      - 📁 carbon
+        - 📑 carbonCost.py
 - 📑 README.md
+- 📑 .gitignore
 
 ## Simulator
 
@@ -56,8 +57,8 @@ Over a year, depending on the **sun irradiation**, or the **windspeed**, you mig
 
 With regard to the dispatch, we can adopt _two different dispatching strategies_ : **cycle charging** and **load following**.
 
-| Load following                                                                                                                                                                                                                                                                                                            | Cycle charging |
-| :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :------------- |
+| Load following                                                                                                                                                                                                                                                                                                            | Cycle charging                                                                                                                                                                                                                |
+| :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | When renewable energies don't suffice to provide enough energy to the grid, we might want to turn on the dg. If we follow a load following strategy, we first check if there's enough energy in the battery to complete the energy supply. If not, we turn on the dg at a pace such that it **precisely meets the load**. | The case-study is exactly the same as the previous one, but this time, instead of turning on the dg at a lower pace, we turn it on at rate such that it both meets the load and the power needed to fully charge the battery. |
 
 <!--
@@ -85,13 +86,14 @@ where :
 
 - The investment cost is basically the price of your batteries
 - The replacement cost is the price of the batteries multiplied by the number of times you should replace them over the whole project's lifespan
-where :
+  where :
 - The salvage cost is the price at which you could expect to sell your batteries at the end of the project, considering their remaining lifetime
 - The operating cost is the price you pay for your workforce to operate and maintain the batteries
 
 The battery cost relies on the dispatch described above. Indeed, the dispatch heavily impacts the battery throughput (how much energy flows through the battery) and therefore its **lifetime** and consequently the number of replacements and therefore : **the cost**.
 
 #### Diesel generator
+
 The cost of the Diesel generator is calculated with the following formula :
 
 ```latex
@@ -107,10 +109,11 @@ where :
 - The fuel cost is the price of fuel consumption according to the market price of diesel fuel.
 
 #### Photo Voltaic Pannels
+
 The cost of the PV is calculated with the following formula :
 
 ```latex
-total cost = capital cost + (replacement cost - salvage cost) + operation & maintenance cost 
+total cost = capital cost + (replacement cost - salvage cost) + operation & maintenance cost
 ```
 
 where :
@@ -120,18 +123,13 @@ where :
 - The operational and maintenance cost is the annual cost of operating and maintaining the PV
 - The salvage cost is the price at which you could expect to sell your PV at the end of the project, considering their remaining lifetime
 
-
 #### Wind turbines
 
 #### CO2 emissions
 
 The inputs into costCarbon.py module would be the same as the inputs into dollarsCost.py module. The output of the costCarbon.emissionCO2() function would be the average emission of CO2 (kgCO2e/h) across the entire project lifespan.
 
-The value of the output (kgCO2e/h) depends on:
-        - The size of the generator
-        - The storage capacity of the battery
-        - The nominal power rating of the PV
-        - The dispatch strategy being used
+The value of the output (kgCO2e/h) depends on: - The size of the generator - The storage capacity of the battery - The nominal power rating of the PV - The dispatch strategy being used
 
 ## Optimizer
 

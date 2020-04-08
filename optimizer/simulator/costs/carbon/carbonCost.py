@@ -5,7 +5,7 @@ Created on Mon Apr  7 12:30:42 2020
 @author: yun bin choh
 """
 
-from dispatching.dispatchingLoop import dispatchingLoop
+from simulator.dispatching.dispatchingLoop import dispatchingLoop
 import numpy as np
 
 def carbonCost(gridComponents, timeStep, loadVector, projectDuration, discountRate, strategy):
@@ -104,5 +104,5 @@ def carbonCost(gridComponents, timeStep, loadVector, projectDuration, discountRa
 
     # Average per hour C02 emission for entire project lifespan (kgCO2e/h)
     totalEmissionCO2hourly = totalEmissionCO2/projectDuration
-
+#    print("The carbon cost is: {} kgCO2e/h".format(totalEmissionCO2hourly))
     return totalEmissionCO2hourly

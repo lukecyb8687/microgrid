@@ -4,11 +4,12 @@ Created on Tue Apr  7 12:58:54 2020
 
 @author: bastien velitchkine
 """
+import numpy as np
 
 from costFunctionBuilder import costFunctionBuilder 
 from platypus import NSGAII, Problem, Real
 
-def optimizer(fixedParameters, costFunctions, constraints):
+def optimizer(fixedParameters, constraints):
     """
             - fixedParameters: {gridComponents : {
                                                         "battery" : {
@@ -45,9 +46,6 @@ def optimizer(fixedParameters, costFunctions, constraints):
                                projectDuration : int, the duration of the whole project in hours (e.g 25 * 365 * 24),
                                discountRate: float, the discount ratio,
                                strategy : "LF" or "CC", respectively for "Load Following" or "Cycle Charging"
-                               }
-                - costFunctions : list of 
-                    - lambda functions whose inputs are the arguments to optimize and outputs are the the floats corresponding to the costs we aim at minimizing
                 - constraints : {
                                     "diesel":
                                                 {
@@ -83,12 +81,30 @@ def optimizer(fixedParameters, costFunctions, constraints):
         }                                                    
     """        
     
+    gridComponents = fixedParameters["gridComponents"]
+    timeStep = fixedParameters["timeStep"]
+    loadVector = fixedParameters["loadVector"]
+    projectDuration = fixedParameters["projectDuration"]
+    discountRate = fixedParameters["discountRate"]
+    strategy = fixedParameters["strategy"]
+    
+    def costFunction(x):
+        from simulator.costs.dollars.dollarCost import dollarCost
+        from simulator.costs.carbon.carbonCost import carbonCost
+        gridComponents["battery"]["maxStorage"] = x[0]
+        gridComponents["diesel"]["maxPower"] = x[1]
+        gridComponents["photovoltaic"]["maxPower"] = x[2]
+
+
+        return [dollarCost(gridComponents, timeStep, loadVector, projectDuration, discountRate, strategy),
+                carbonCost(gridComponents, timeStep, loadVector, projectDuration, discountRate, strategy)]
+    
     problem = Problem(3, 2)
     problem.types[:] = [Real(constraints["battery"]["lowerBound"], constraints["battery"]["upperBound"]), Real(constraints["diesel"]["lowerBound"], constraints["diesel"]["upperBound"]), Real(constraints["photovoltaic"]["lowerBound"], constraints["photovoltaic"]["upperBound"])]
-    problem.function = costFunctionBuilder(fixedParameters["gridComponents"], fixedParameters["timeStep"], fixedParameters["loadVector"], fixedParameters["projectDuration"], fixedParameters["discountRate"], fixedParameters["strategy"])(vars[0], vars[1], vars[2])
+    problem.function = costFunction # lambda x: [sum(x), sum([val**2 for val in x])]
     
     algorithm = NSGAII(problem)
-    algorithm.run(10)
+    algorithm.run(1)
     
     # display the results
     for solution in algorithm.result:
@@ -136,6 +152,7 @@ def optimizerTest():
                                "discountRate": 0.0588,
                                "strategy" : "LF"
                        }
+                                                        
     constraints = {
                                     "diesel":
                                                 {
@@ -153,4 +170,5 @@ def optimizerTest():
                                                             "lowerBound": 0,
                                                     },           
                                 }
+                                                    
     optimizer(fixedParameters, constraints)    

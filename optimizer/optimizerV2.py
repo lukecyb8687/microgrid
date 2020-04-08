@@ -8,6 +8,7 @@ Edited on Wed Apr 8 10:46:23 2020
 
 @author: yun bin choh
 """
+import numpy as np
 
 from platypus import NSGAII, Problem, Real
 import matplotlib.pyplot as plt
@@ -90,22 +91,32 @@ def optimizer(gridComponents,constraints,timeStep,loadVector ,projectDuration ,d
 
         
     def optimizerBuilder(x):
-        from dollarCost import dollarCost
-        from costCarbon import emissionCO2
+        from simulator.costs.dollars.dollarCost import dollarCost
+        from simulator.costs.carbon.carbonCost import carbonCost
         gridComponents["battery"]["maxStorage"] = x[0]
         gridComponents["diesel"]["maxPower"] = x[1]
         gridComponents["photovoltaic"]["maxPower"] = x[2]
 
 
         return [dollarCost(gridComponents, timeStep, loadVector, projectDuration, discountRate, strategy),
-                emissionCO2(gridComponents, timeStep, loadVector, projectDuration, discountRate, strategy)]
+                carbonCost(gridComponents, timeStep, loadVector, projectDuration, discountRate, strategy)]
+    
+#    def optimizerBuilder(x):
+#        def f1(y):
+#            print("We computed f1")
+#            return sum(y)
+#        def f2(y):
+#            print("We computed f2")
+#            return sum([z ** 2 for z in y])
+#
+#        return [f1(x),f2(x)]
 
     problem = Problem(3, 2)
     problem.types[:] = [Real(constraints["battery"]["lowerBound"], constraints["battery"]["upperBound"]), Real(constraints["diesel"]["lowerBound"], constraints["diesel"]["upperBound"]), Real(constraints["photovoltaic"]["lowerBound"], constraints["photovoltaic"]["upperBound"])]
 
     problem.function = optimizerBuilder
     algorithm = NSGAII(problem)
-    algorithm.run(100)
+    algorithm.run(1)
     feasible_solutions = [s for s in algorithm.result if s.feasible]
 
     # Storing the results
@@ -127,60 +138,151 @@ def optimizer(gridComponents,constraints,timeStep,loadVector ,projectDuration ,d
 
     return f1,f2,feasible_solutions
 
-# To test (Input variables to be modified. This section can be ignored after successful test run):
-gridComponents = {
-                    "battery" : {
-                                    "initialStorage": 892,
-                                    "maxInputPow": 6 * 167 * 892,
-                                    "maxOutputPow": 6 * 500 * 892,
-                                    "SOC_min": 0,
-                                    "maxThroughput": 3000,
-                                    "lifetime": 15*8760,
-                                    "capitalCost": 550,
-                                    "replacementCost": 550,
-                                    "operationalCost": 10
-                                },
-                    "diesel" : {
-                                    "fuelCost": 1,
-                                    "fuelCostGrad": 0.2359760012,
-                                    "fuelCostIntercept": 28.5,
-                                    "lifetime": 162060,
-                                    "capitalCost": 500,
-                                    "replacementCost": 500,
-                                    "operationalCost": 0.030,
-                                },
-                    "photovoltaic" : {
-                                        "lifetime": 25*8760,
-                                        "capitalCost": 2500,
-                                        "replacementCost": 2500,
-                                        "operationalCost": 10,
-                                        "powerTimeVector": LFdf['Pv_Output']
-                                    }
-                }
-                 
-timeStep = 1
-loadVector = LFdf['Demand']
-projectDuration = 25*8760
-discountRate = 5/100
-strategy = "LF" 
+## To test (Input variables to be modified. This section can be ignored after successful test run):
+#gridComponents = {
+#                    "battery" : {
+#                                    "initialStorage": 892,
+#                                    "maxInputPow": 6 * 167 * 892,
+#                                    "maxOutputPow": 6 * 500 * 892,
+#                                    "SOC_min": 0,
+#                                    "maxThroughput": 3000,
+#                                    "lifetime": 15*8760,
+#                                    "capitalCost": 550,
+#                                    "replacementCost": 550,
+#                                    "operationalCost": 10
+#                                },
+#                    "diesel" : {
+#                                    "fuelCost": 1,
+#                                    "fuelCostGrad": 0.2359760012,
+#                                    "fuelCostIntercept": 28.5,
+#                                    "lifetime": 162060,
+#                                    "capitalCost": 500,
+#                                    "replacementCost": 500,
+#                                    "operationalCost": 0.030,
+#                                },
+#                    "photovoltaic" : {
+#                                        "lifetime": 25*8760,
+#                                        "capitalCost": 2500,
+#                                        "replacementCost": 2500,
+#                                        "operationalCost": 10,
+#                                        "powerTimeVector": np.array([abs(np.sin((2 * np.pi * hour/ 48))) for hour in np.arange(0, 24 * 365)]) # We suppose that the irradiance of the pannels is a sinusoide
+#                                    }
+#                }
+#                 
+#timeStep = 1
+#loadVector = np.array([abs(np.sin((2 * np.pi * hour/ 24 - (np.pi/2)))) for hour in np.arange(24 * 365)]), # We model the load by a sinusoide with max demand at 6 am and 6pm
+#projectDuration = 25*8760
+#discountRate = 5/100
+#strategy = "LF" 
+#
+#constraints = {
+#                "diesel":
+#                            {
+#                                    "upperBound": 2000,
+#                                    "lowerBound": 0,
+#                            },
+#                  "battery":
+#                            {
+#                                    "upperBound": 1000,
+#                                    "lowerBound": 0,
+#                            },
+#                  "photovoltaic":
+#                                {
+#                                        "upperBound": 10,
+#                                        "lowerBound": 0,
+#                                },           
+#              }
+##     %%time 
+#results = optimizer(gridComponents,constraints,timeStep,loadVector,projectDuration ,discountRate ,strategy)[2]
+#
 
-constraints = {
-                "diesel":
-                            {
-                                    "upperBound": 2000,
-                                    "lowerBound": 0,
-                            },
-                  "battery":
-                            {
-                                    "upperBound": 1000,
-                                    "lowerBound": 0,
-                            },
-                  "photovoltaic":
-                                {
-                                        "upperBound": 10,
-                                        "lowerBound": 0,
-                                },           
-              }
-#     %%time 
-results = optimizer(gridComponents,constraints,timeStep,loadVector ,projectDuration ,discountRate ,strategy)[2]
+def optimizerTest():
+    """
+    A simple function to test the function `optimizer`
+    """
+    
+    gridComponents = {
+                                                        "battery" : {
+                                                                        "initialStorage": 1.,
+                                                                        "maxInputPow": 6 * 157,
+                                                                        "maxOutputPow": 6 * 500,
+                                                                        "SOC_min": 0.,
+                                                                        "maxThroughput": 3000.,
+                                                                        "lifetime": 5 * 365 * 24,
+                                                                        "capitalCost": 200,
+                                                                        "replacementCost": 200,
+                                                                        "operationalCost": 0.03
+                                                                    },
+                                                        "diesel" : {
+                                                                        "fuelCost": 1.2,
+                                                                        "fuelCostGrad": 1.,
+                                                                        "fuelCostIntercept": 0.,
+                                                                        "lifetime": 10 * 365 * 24,
+                                                                        "capitalCost": 1000,
+                                                                        "replacementCost": 1000,
+                                                                        "operationalCost": 0.03,
+                                                                    },
+                                                        "photovoltaic" : {
+                                                                            "lifetime": 25 * 365 * 24,
+                                                                            "capitalCost": 500,
+                                                                            "replacementCost": 500,
+                                                                            "operationalCost": 0.03,
+                                                                            "powerTimeVector": np.array([abs(np.sin((2 * np.pi * hour/ 48))) for hour in np.arange(0, 24 * 365)]) # We suppose that the irradiance of the pannels is a sinusoide
+                                                                        }
+                                                    }
+#    gridComponents = {
+#                    "battery" : {
+#                                    "initialStorage": 892,
+#                                    "maxInputPow": 6 * 167 * 892,
+#                                    "maxOutputPow": 6 * 500 * 892,
+#                                    "SOC_min": 0,
+#                                    "maxThroughput": 3000,
+#                                    "lifetime": 15*8760,
+#                                    "capitalCost": 550,
+#                                    "replacementCost": 550,
+#                                    "operationalCost": 10
+#                                },
+#                    "diesel" : {
+#                                    "fuelCost": 1,
+#                                    "fuelCostGrad": 0.2359760012,
+#                                    "fuelCostIntercept": 28.5,
+#                                    "lifetime": 162060,
+#                                    "capitalCost": 500,
+#                                    "replacementCost": 500,
+#                                    "operationalCost": 0.030,
+#                                },
+#                    "photovoltaic" : {
+#                                        "lifetime": 25*8760,
+#                                        "capitalCost": 2500,
+#                                        "replacementCost": 2500,
+#                                        "operationalCost": 10,
+#                                        "powerTimeVector": np.array([abs(np.sin((2 * np.pi * hour/ 48))) for hour in np.arange(0, 24 * 365)]) # We suppose that the irradiance of the pannels is a sinusoide
+#                                    }
+#                }                                                        
 
+    timeStep = 1
+    loadVector = np.array([abs(np.sin((2 * np.pi * hour/ 24 - (np.pi/2)))) for hour in np.arange(0, 24 * 365)]) # We model the load by a sinusoide with max demand at 6 am and 6pm
+    projectDuration = 25 * 365 * 24
+    discountRate = 0.0588
+    strategy = "LF"
+                                                        
+    constraints = {
+                        "diesel":
+                                    {
+                                            "upperBound": 100,
+                                            "lowerBound": 0,
+                                    },
+                         "battery":
+                                    {
+                                            "upperBound": 100,
+                                            "lowerBound": 0,
+                                    },
+                         "photovoltaic":
+                                        {
+                                                "upperBound": 100,
+                                                "lowerBound": 0,
+                                        }         
+    }
+                                                    
+    results = optimizer(gridComponents,constraints,timeStep,loadVector,projectDuration ,discountRate ,strategy)[2]    
+    print(results)

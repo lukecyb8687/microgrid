@@ -184,7 +184,7 @@ def pvCost(Ppv,
        cashFlowTable['LCOE Annual'][i] = abs(sum(cashFlowTable['Total Discounted Cost'][0:i+1])) / sum(cashFlowTable['Annual Electricity kWh Discount'][0:i+1])
 
 
-
-
-    return abs(sum(cashFlowTable['Total Discounted Cost']))
+    totalCost = abs(sum(cashFlowTable['Total Discounted Cost']))
+#    print("The pv cost is : {}$\n".format(totalCost))
+    return totalCost
 

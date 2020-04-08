@@ -99,7 +99,7 @@ def dispatchingStrategy(powerVariables, energyVariables,
     if netLoad <= 0:
         newBattStorage = batteryManagement(abs(netLoad))
         generatorPower = 0
-        return [0, round(newBattStorage, 3)]
+        return [generatorPower, round(newBattStorage, 3)]
     else:
         dischargingPow = min(netLoad, (batteryStorage - SOC_min) / timeStep, battMaxOutputPow)
         newBattStorage = round(batteryStorage - dischargingPow * timeStep, 3)

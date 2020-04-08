@@ -27,6 +27,7 @@ def batteryCost(powerTimeVector, discountRate, timeVariables, costVariables,
         - totalCost : float, the total discounted cost of the dg during the whole project
     
     """
+#    print("début")
     timeStep, lifespan = timeVariables[0], timeVariables[1]
     replacementCost, costPerHour, investmentCost = costVariables[
         0], costVariables[1], costVariables[2]
@@ -47,6 +48,6 @@ def batteryCost(powerTimeVector, discountRate, timeVariables, costVariables,
                            replacementTime, discountRate)
 
     totalCost = capitalCost + (totReplacementCost - salvCost) + operCost
-
+#    print("The battery cost is : {}$\n".format(totalCost))
     return totalCost
 

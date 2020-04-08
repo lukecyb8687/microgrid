@@ -18,7 +18,7 @@ def dgCost(Pg,
                  discountFactor,
                  fuelCostGrad,
                  fuelCostIntercept):
-    
+    print("debut")    
     N = N_years*8760 # Project Lifetime in hours
 
     def dg_lifetime(): 
@@ -215,6 +215,7 @@ def dgCost(Pg,
 
 
 
-
-    return abs(sum(cashFlowTable['Total Discounted Cost']))
+    totalCost = abs(sum(cashFlowTable['Total Discounted Cost']))
+#    print("The generator cost is : {}$\n".format(totalCost))
+    return totalCost
 

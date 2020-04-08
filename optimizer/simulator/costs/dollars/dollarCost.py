@@ -112,4 +112,5 @@ def dollarCost(gridComponents, timeStep, loadVector, projectDuration, discountRa
                  discountRate*100)
     
     totalCost = battery + dg + pv
+#    print("The total cost is : {}$\n".format(totalCost))
     return totalCost
