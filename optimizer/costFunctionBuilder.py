@@ -4,8 +4,7 @@ Created on Tue Apr  7 11:09:27 2020
 
 @author: bastien velitchkine
 """
-import os
-os.chdir("../simulator")
+
 from simulator.costs.dollars.dollarCost import dollarCost
 from simulator.costs.carbon.carbonCost import carbonCost
 
