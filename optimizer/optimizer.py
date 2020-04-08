@@ -16,7 +16,7 @@ def optimizer(fixedParameters, costFunctions, constraints):
                                                                         "maxInputPow": float, the maximum charging power of the battery in kW for a 1kWh battery. The real value will be obtained by multiplying by the maximum storage capacity,
                                                                         "maxOutputPow": float, the maximum discharging power of the battery in kW for a 1kWh battery. The real value will be obtained by multiplying by the maximum storage capacity,
                                                                         "SOC_min": float, the minimum amount of energy that can be stored in the battery as a percentage of the maximum storage capacity,
-                                                                        "maxThroughput": float, the maximum amount of energy that can flow in and out of the battery during its lifetime (kWh),
+                                                                        "maxThroughput": float, the number by which we multiply the max storage to get the maximum amount of energy that can flow in and out of the battery during its lifetime (kWh),
                                                                         "lifetime": int, the nominal lifetime of the battery in hours. It's the time after which we must replace it if we did not exceed the maximum throughput,
                                                                         "capitalCost": float, the cost of a 1kWh battery in $,
                                                                         "replacementCost": float, the cost to replace 1kWh of batteries in $,
@@ -101,10 +101,10 @@ def optimizerTest():
     
     fixedParameters = {"gridComponents": {
                                                         "battery" : {
-                                                                        "initialStorage": 1,
-                                                                        "maxInputPow": float, the maximum charging power of the battery (kW),
-                                                                        "maxOutputPow": float, the maximum discharging power of the battery (kW),
-                                                                        "SOC_min": float, the minimum amount of energy that can be stored in the battery (kWh),
+                                                                        "initialStorage": 1.,
+                                                                        "maxInputPow": 6 * 157,
+                                                                        "maxOutputPow": 6 * 500,
+                                                                        "SOC_min": 0.,
                                                                         "maxThroughput": float, the maximum amount of energy that can flow in and out of the battery during its lifetime (kWh),
                                                                         "lifetime": int, the nominal lifetime of the battery in hours. It's the time after which we must replace it if we did not exceed the maximum throughput,
                                                                         "capitalCost": float, the cost of a 1kWh battery in $,
