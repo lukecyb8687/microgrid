@@ -16,9 +16,9 @@ def carbonCost(gridComponents, timeStep, loadVector, projectDuration, discountRa
                                 "battery" : {
                                                 "maxStorage": float, the battery capacity storage (kWh),
                                                 "initialStorage": float between 0 and 1, the battery initial energy storage as a percentage of the maximum storage capacity,
-                                                "maxInputPow": float, the maximum charging power of the battery (kW),
-                                                "maxOutputPow": float, the maximum discharging power of the battery (kW),
-                                                "SOC_min": float, the minimum amount of energy that can be stored in the battery (kWh),
+                                                "maxInputPow": float, the maximum charging power of the battery in kW for a 1kWh battery. The real value will be obtained by multiplying by the maximum storage capacity,
+                                                "maxOutputPow": float, the maximum discharging power of the battery in kW for a 1kWh battery. The real value will be obtained by multiplying by the maximum storage capacity,
+                                                "SOC_min": float, the minimum amount of energy that can be stored in the battery as a percentage of the maximum storage capacity,
                                                 "maxThroughput": float, the maximum amount of energy that can flow in and out of the battery during its lifetime (kWh),
                                                 "lifetime": int, the nominal lifetime of the battery in hours. It's the time after which we must replace it if we did not exceed the maximum throughput,
                                                 "capitalCost": float, the cost of a 1kWh battery in $,
