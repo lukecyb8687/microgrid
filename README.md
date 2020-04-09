@@ -13,6 +13,14 @@ Therefore, the aim of the project is to give an end-to-end program that optimize
 
 # Prerequisites
 
+## Packages
+
+- **numpy** 👉 the basic scientific library of Python with built-in math functions and easy array handling
+- **time** 👉 for the sole purpose of printing the computational times
+- **platypus** 👉 the multi-objective optimization library with [It's library](#https://platypus.readthedocs.io/en/latest/getting-started.html)
+- **matplotlib.pyplot** 👉 for graph plotting
+- **pandas** 👉 to manipulate dataframes, a Python object that comes in handy when we manipulate large datasets
+
 What packages does the user need ? (e.g numpy, pymo, ...)
 
 # Architecture
@@ -138,11 +146,16 @@ where :
 
 Ultimately, thanks to the 4 previous cost functions, we can compute the total cost of the project in dollars. This will be the first cost function that the optimizer will try to minimize.
 
-### CO2 emissions
+### CO2 emissions ♻️
 
-The inputs into costCarbon.py module would be the same as the inputs into dollarsCost.py module. The output of the costCarbon.emissionCO2() function would be the average emission of CO2 (kgCO2e/h) across the entire project lifespan.
+The inputs into `costCarbon.py` module would be the same as the inputs into `dollarsCost.py` module. The output of the costCarbon.emissionCO2() function would be the average emission of CO2 (kgCO2e/h) across the entire project lifespan.
 
-The value of the output (kgCO2e/h) depends on: - The size of the generator - The storage capacity of the battery - The nominal power rating of the PV - The dispatch strategy being used
+The value of the output (kgCO2e/h) depends on:
+
+- The size of the generator
+- The storage capacity of the battery
+- The nominal power rating of the PV
+- The dispatch strategy being used
 
 The carbon cost function will be the second function that our optimizer will aim at minimizing.
 
