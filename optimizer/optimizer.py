@@ -11,6 +11,7 @@ from simulator.costs.dollars.dollarCost import dollarCost
 from simulator.costs.carbon.carbonCost import carbonCost
 
 from platypus import NSGAII, Problem, Real
+import time
 
 def optimizer(fixedParameters, constraints):
     """
@@ -129,7 +130,7 @@ def optimizerTest():
     """
     A simple function to test the function `optimizer`
     """
-    
+    debut = time.time()    
     fixedParameters = {
                             "gridComponents": {
                                                         "battery" : {
@@ -187,3 +188,4 @@ def optimizerTest():
                                 }
                                                     
     optimizer(fixedParameters, constraints)    
+    print("The total computation took {}s".format(time.time() - debut))
