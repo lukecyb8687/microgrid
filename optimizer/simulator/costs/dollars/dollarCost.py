@@ -8,11 +8,9 @@ Edited on Tues Apr 7 07:19:43 2020
 
 @author: yun bin choh
 """
-import numpy as np
-
 from simulator.costs.dollars.battery.batteryCost import batteryCost
 from simulator.costs.dollars.dg.dgCostAlt import dgCost # dgCostAlt has a function that is 4 times faster than the one in dgCost, on average
-from simulator.costs.dollars.pv.pvCost import pvCost
+from simulator.costs.dollars.pv.pvCostAlt import pvCost # pvCostAlt much faster than pvCost as well
 
 import time
 
@@ -103,27 +101,30 @@ def dollarCost(gridComponents, timeStep, loadVector, projectDuration, discountRa
 #                 gridComponents["diesel"]["fuelCostGrad"],
 #                 gridComponents["diesel"]["fuelCostIntercept"])
     
-    timeVariables = [timeStep, gridComponents["diesel"]["lifetime"], projectDuration]
-    costVariables = [gridComponents["diesel"]["replacementCost"], gridComponents["diesel"]["operationalCost"], gridComponents["diesel"]["capitalCost"]]
+    dgTimeVariables = [timeStep, gridComponents["diesel"]["lifetime"], projectDuration]
+    dgCostVariables = [gridComponents["diesel"]["replacementCost"], gridComponents["diesel"]["operationalCost"], gridComponents["diesel"]["capitalCost"]]
     dgMaxPower = gridComponents["diesel"]["maxPower"]
     grad = gridComponents["diesel"]["fuelCostGrad"]
     intercept = gridComponents["diesel"]["fuelCostIntercept"]
     fuelVariables = [gridComponents["diesel"]["fuelCost"], lambda power, timeStep : timeStep * grad * power + intercept]
-    dg = dgCost(generatorPowerVector, dgMaxPower, discountRate, timeVariables, costVariables, fuelVariables)
+    dg = dgCost(generatorPowerVector, dgMaxPower, discountRate, dgTimeVariables, dgCostVariables, fuelVariables)
     
     # PV COST
-    pvPowerVector = np.tile(pvPowerVector,projectDuration//(24 * 365))
-    pv = pvCost(pvPowerVector,
-                 projectDuration//(24 * 365),
-                 gridComponents["photovoltaic"]["maxPower"],
-                 gridComponents["photovoltaic"]["capitalCost"],
-                 gridComponents["photovoltaic"]["replacementCost"],
-                 gridComponents["photovoltaic"]["operationalCost"],
-                 gridComponents["photovoltaic"]["lifetime"],
-                 discountRate*100)
+#    pvPowerVector = np.tile(pvPowerVector,projectDuration//(24 * 365))
+#    pv = pvCost(pvPowerVector,
+#                 projectDuration//(24 * 365),
+#                 gridComponents["photovoltaic"]["maxPower"],
+#                 gridComponents["photovoltaic"]["capitalCost"],
+#                 gridComponents["photovoltaic"]["replacementCost"],
+#                 gridComponents["photovoltaic"]["operationalCost"],
+#                 gridComponents["photovoltaic"]["lifetime"],
+#                 discountRate*100)
     
-#    pv = 0
-    totalCost = battery + dg + pv
+    pvTimeVariables = [timeStep, gridComponents["photovoltaic"]["lifetime"], projectDuration]
+    pvCostVariables = [gridComponents["photovoltaic"]["replacementCost"], gridComponents["photovoltaic"]["operationalCost"], gridComponents["photovoltaic"]["capitalCost"]]
+    pvMaxPower = gridComponents["photovoltaic"]["maxPower"]
+    pv = pvCost(pvPowerVector, pvMaxPower, discountRate, pvTimeVariables, pvCostVariables)
     
+    totalCost = battery + dg + pv    
     print("dollarCost took {}s to compute".format(time.time() - debut))
     return totalCost
