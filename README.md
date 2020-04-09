@@ -21,8 +21,6 @@ Therefore, the aim of the project is to give an end-to-end program that optimize
 - **matplotlib.pyplot** 👉 for graph plotting
 - **pandas** 👉 to manipulate dataframes, a Python object that comes in handy when we manipulate large datasets
 
-What packages does the user need ? (e.g numpy, pymo, ...)
-
 # Architecture
 
 Below is the architecture of our project. it is subdivided in multiple packages and modules that all lead one main function, the one that will help the end user in his task of properly designing the micro-grid.
