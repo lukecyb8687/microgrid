@@ -18,7 +18,7 @@ def dgCost(Pg,
                  discountFactor,
                  fuelCostGrad,
                  fuelCostIntercept):
-    print("debut")    
+#    print("debut")    
     N = N_years*8760 # Project Lifetime in hours
 
     def dg_lifetime(): 
@@ -79,14 +79,25 @@ def dgCost(Pg,
       Total nominal fuel cost for each respective year of operation
       """
 
+#      yearlyFuelCost = []
+#      for elem in range(1,N_years+1):
+#        fuelConsumptionResult = [] #L/hr 
+#        for i in range(8760*(elem-1) , 8760*elem):
+#            if Pg[i] > 0.25*genNomPower:
+#                fCon = fuelCostGrad*Pg[i] + fuelCostIntercept
+#                fuelConsumptionResult.append(fCon)
+#        total_fuel_consumption = sum(fuelConsumptionResult)
+#        total_fuel_cost = fuelCost * total_fuel_consumption
+#        yearlyFuelCost.append(total_fuel_cost)
+      
+      ## BELOW AN ALTERNATIVE THAT COULD HELP GAIN SOME TIME
       yearlyFuelCost = []
-      for elem in range(1,N_years+1):
-        fuelConsumptionResult = [] #L/hr 
-        for i in range(8760*(elem-1) , 8760*elem):
-            if Pg[i] > 0.25*genNomPower:
-                fCon = fuelCostGrad*Pg[i] + fuelCostIntercept
-                fuelConsumptionResult.append(fCon)
-        total_fuel_consumption = sum(fuelConsumptionResult)
+      for elem in range(1, N_years + 1):
+        total_fuel_consumption = 0 #L/hr 
+        for i in range(8760 * (elem - 1) , 8760 * elem):
+            if Pg[i] > 0.25 * genNomPower:
+                fCon = fuelCostGrad * Pg[i] + fuelCostIntercept
+                total_fuel_consumption += fCon
         total_fuel_cost = fuelCost * total_fuel_consumption
         yearlyFuelCost.append(total_fuel_cost)
       
