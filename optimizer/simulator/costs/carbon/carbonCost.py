@@ -76,17 +76,20 @@ def carbonCost(gridComponents, timeStep, loadVector, projectDuration, discountRa
 
     # Emission (kg) per litre of diesel fuel consumed
     co2PerLitre = 2.65 #kg/L
-    generatorPowerVector = np.tile(generatorPowerVector, projectDuration//(24 * 365))
+    generatorPowerVector = np.tile(generatorPowerVector, projectDuration//(len(generatorPowerVector) * timeStep))
 
     # Now we calculate the hourly emission of CO2 in kg by the Diesel Generator 
     N_years = projectDuration//8760
+    dgMaxPower = gridComponents["diesel"]["maxPower"]
+    fuelCostGrad = gridComponents["diesel"]["fuelCostGrad"]
+    fuelCostIntercept = gridComponents["diesel"]["fuelCostIntercept"]
+    
     for elem in range(1,N_years+1):
-      fuelConsumptionResult = []  
+      totalFuelConsumption = 0
       for i in range(8760*(elem-1) , 8760*elem):
-          if generatorPowerVector[i] > 0.25*gridComponents["diesel"]["maxPower"]:
-              fCon = gridComponents["diesel"]["fuelCostGrad"]*generatorPowerVector[i] + gridComponents["diesel"]["fuelCostIntercept"]
-              fuelConsumptionResult.append(fCon)
-    totalFuelConsumption = sum(fuelConsumptionResult)
+          if generatorPowerVector[i] > 0.25 * dgMaxPower:
+              fCon = fuelCostGrad * generatorPowerVector[i] + fuelCostIntercept
+              totalFuelConsumption += fCon
     emiCO2Gen = co2PerLitre*totalFuelConsumption #kgCO2e
 
     # Now we multiply the emission by an upstream factor to take into account life-cycle CO2 production
