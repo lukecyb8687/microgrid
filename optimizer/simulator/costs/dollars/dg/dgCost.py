@@ -105,7 +105,7 @@ def dgCost(Pg,
 
     def dg_replacement_cost_nominal():
         nomcost = []
-        for n in range(1,1+dgReplacementNumber):
+        for n in range(1, 1 + dgReplacementNumber):
           nomcost.append(dgReplacementCost)
         return nomcost
         
@@ -162,18 +162,25 @@ def dgCost(Pg,
 
     # Yearly Generation kWh
     annualEnergy = np.ones(N_years+1)*8760*genNomPower
+#    annualEnergy = [8760 * genNomPower for year in range(N_years + 2)]
 
     # CONSTRUCTING DATA TABLE
     data = {'Year of Operation': list(range(0,N_years+1)),
             'Discount Factor': discount_factor(discountFactor,N_years),
 
             'Capital Cost Nominal':list(capitalCost),
-            'Replacement Cost Nominal':np.zeros(N_years+1),
+#            'Capital Cost Nominal': (N_years + 1) * [0.],
+            'Replacement Cost Nominal': np.zeros(N_years+1),
             'OM Cost Nominal':list(omCost),
+#            'OM Cost Nominal': (N_years + 1) * [0.],
             'Salvage Cost Nominal':list(salvageCost),
+#            'Salvage Cost Nominal': (N_years + 1) * [0.],
             'Fuel Cost Nominal':list(fuelCostnom),
-            'Annual Electricity kWh': list(annualEnergy),
-            'Total Nominal Cost':list(fuelCostnom)}
+#            'Fuel Cost Nominal': (N_years + 1) * [0.],
+            'Annual Electricity kWh': annualEnergy,
+            'Total Nominal Cost': list(fuelCostnom),
+#            'Total Nominal Cost': (N_years + 1) * [0.]
+            }
 
     cashFlowTable = pd.DataFrame.from_dict(data)
 

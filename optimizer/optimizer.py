@@ -101,7 +101,7 @@ def optimizer(fixedParameters, constraints):
     
     problem = Problem(3, 2)
     problem.types[:] = [Real(constraints["battery"]["lowerBound"], constraints["battery"]["upperBound"]), Real(constraints["diesel"]["lowerBound"], constraints["diesel"]["upperBound"]), Real(constraints["photovoltaic"]["lowerBound"], constraints["photovoltaic"]["upperBound"])]
-    problem.function = costFunction # lambda x: [sum(x), sum([val**2 for val in x])]
+    problem.function = costFunction # lambda x: [sum(x), sum([val**2 for val in x])] #The function helped us see that the computational time of our cost functions was a problem
     
     algorithm = NSGAII(problem)
     algorithm.run(1)
