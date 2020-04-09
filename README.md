@@ -21,6 +21,7 @@ Below is the architecture of our project. it is subdivided in multiple packages 
 
 - 📁 optimizer
   - 📑 optimizer.py
+  - 📑 optimizerV2.py
   - 📑 costFunctionBuilder.py
   - 📁 simulator
     - 📁 dispatching
@@ -33,8 +34,12 @@ Below is the architecture of our project. it is subdivided in multiple packages 
           - 📑 auxilliaryCostFunctions.py
           - 📑 batteryCost.py
         - 📁 pv
+          - 📑 auxilliaryCostFunctions.py
+          - 📑 pvCostAlt.py
           - 📑 pvCost.py
         - 📁 diesel
+          - 📑 auxilliaryCostFunctions.py
+          - 📑 dgCostAlt.py
           - 📑 dgCost.py
         - 📁 windmill
           - 📑 windCost.py
@@ -43,7 +48,7 @@ Below is the architecture of our project. it is subdivided in multiple packages 
 - 📑 README.md
 - 📑 .gitignore
 
-## Simulator
+# Simulator
 
 The simulator is a simplified package that yields the various costs of the micro-grid, given the sizes of each component of the grid. For instance :
 
@@ -51,7 +56,7 @@ The simulator is a simplified package that yields the various costs of the micro
 
 `dollarCost.py` and `carbonCost.py` are the two Python files in which functions compute the global cost and the global carbon dioxyde emissions during the whole project. Those are the _cost functions that the optimizer will aim at minimizing_.
 
-### Dispatching
+## Dispatching
 
 Over a year, depending on the **sun irradiation**, or the **windspeed**, you might alternatively switch on and off the diesel generator, or even store energy in the battery to meet future demand. For instance, during summer, there is a much higher sun irradiation, more than needed to meet the power demand during the day. So thanks to the PVs and the battery, one part of the energy can be directly consumed, and the extra amount of energy can be stored in the battery. The battery will discharge at night, after the sun set.
 
@@ -72,7 +77,7 @@ The case-study is exactly the same as the previous one, but this time, instead o
 
 Whether we chose one strategy or the other, the dispatching algorithm will compute the amount of **energy stored in the battery** at each time step as well as the **functionning power of the dg** at each time step. It directly impacts the amount of _fuel consumed\_\_ as well as the \_lifetime of the battery_ for instance.
 
-### Costs
+## Costs
 
 #### Battery
 
@@ -108,6 +113,8 @@ where :
 - The salvage cost is the price at which you could expect to sell your diesel generator at the end of the project, considering their remaining lifetime
 - The fuel cost is the price of fuel consumption according to the market price of diesel fuel.
 
+Just like for the battery, the diesel generator cost is **heavily impacted by the dispatch**. Indeed, depending on the strategy and the dispatching result, we can't reckon with the same number of **working hours** for the dg for instance. If the number of working hours is not the same, the lifetime is not the same and therefore the number of replacements is not the same. _The more replacements, the more expensive_.
+
 #### Photo Voltaic Pannels
 
 The cost of the PV is calculated with the following formula :
@@ -125,18 +132,49 @@ where :
 
 #### Wind turbines
 
-#### CO2 emissions
+**TO COMPLETE**
+
+### Total cost 💸
+
+Ultimately, thanks to the 4 previous cost functions, we can compute the total cost of the project in dollars. This will be the first cost function that the optimizer will try to minimize.
+
+### CO2 emissions
 
 The inputs into costCarbon.py module would be the same as the inputs into dollarsCost.py module. The output of the costCarbon.emissionCO2() function would be the average emission of CO2 (kgCO2e/h) across the entire project lifespan.
 
 The value of the output (kgCO2e/h) depends on: - The size of the generator - The storage capacity of the battery - The nominal power rating of the PV - The dispatch strategy being used
 
-## Optimizer
+The carbon cost function will be the second function that our optimizer will aim at minimizing.
+
+# Optimizer
 
 The optimizer is based on pre-existing python modules. Given a set of cost functions to minimize, the optimizer returns the sizes of each component in order to minimize the cost functions in the mean time. For instance :
 
-> I want to minimize the cost and the carbon dioxyde emissions. I have a limited number of disposable pVs and windmills, my dg cannot be bigger than x, but I have no limits regarding my battery. The optimizer will return the power specifications of each of the components so as to minimize the cost and the carbon dioxyde emissions
+> I want to minimize the cost and the carbon dioxyde emissions. I have a limited number of disposable pVs and windmills, my dg cannot be bigger than x, but I have no limits regarding my battery. The optimizer will return the power specifications of each of the components so as to minimize the cost and the carbon dioxyde emissions.
 
-## Simulator and optimizer
+We used the **plapytus** module. It's user friendly and does not need a lot of parameters. It was the perfect "black box" for this project.
 
-Both sides of the project work hand in hand. Basically, _the simulator provides the optimizer with the right cost functions to minimize._
+## Cost functions
+
+The two cost functions to minimize were `dollarCost` and `carbonCost` implemented in the simulator. These functions were passed as arguments to the platypus optimizer.
+
+## Bounds and parameters
+
+The parameters the optimizer iterated over were the **battery maximum storage capacity**, the **generator maximum output power** and the **solar pannels installed power**. Simply put: after each iteration, the optimizer changed these three values just a bit to see how it affected both the `dollarCost` and the `carbonCost`, in order to find the three values that could minimize both functions in the meantime. The optimimum is called a _Paretto Optimum_ (cf. Wikipedia on top of this document).
+
+However, as we don't have unlimited ressources, we had to add lower and upper bounds to each of three variables (we can't have negative values nor infinite values).
+
+Finally, here is how the problem definition looks :
+
+```python
+problem = Problem(3, 2)
+problem.types[:] = [Real(constraints["battery"]["lowerBound"], constraints["battery"]["upperBound"]), Real(constraints["diesel"]["lowerBound"], constraints["diesel"]["upperBound"]), Real(constraints["photovoltaic"]["lowerBound"], constraints["photovoltaic"]["upperBound"])]
+problem.function = costFunction # the function returns [dollarCost, carbonCost]
+
+algorithm = NSGAII(problem) # NSGAII is the solver used to solve the optimization problem
+algorithm.run(1)
+```
+
+# GUI
+
+One possible extension for this project would be to code a friendly user interface with a web page served by a local server ran by Python (**Django** or **Flask** for instance). More precisely, there could be a web page coded with _html_, _css_ and _js_ where the user can enter and set the parameters for his simulation. The parameters could be sent to the local server running the Python code and would then dynamically render the results of the optimization in the web page.
