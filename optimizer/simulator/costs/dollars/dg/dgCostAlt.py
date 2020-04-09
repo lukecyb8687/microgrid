@@ -5,13 +5,14 @@ Created on Thu Apr  9 15:47:36 2020
 @author: bastien velitchkine
 """
 
-from simulator.costs.dollars.dg.auxilliaryCostFunctions import totalReplacementCost, workingHours, operatingCost, fuelCost, remainingHours, salvageCost
+from simulator.costs.dollars.dg.auxilliaryCostFunctions import totalReplacementCost, totalInvestmentCost, workingHours, operatingCost, fuelCost, remainingHours, salvageCost
 
-def dgCost(powerTimeVector, discountRate, timeVariables, costVariables, fuelVariables):
+def dgCost(powerTimeVector, dgMaxPower, discountRate, timeVariables, costVariables, fuelVariables):
     """
     INPUT :
         - powerTimeVector : np.array of the power output of the DG at each time step of the simulation
-        -discountRate : float
+        - dgMaxPower: float, the maximum power output of the diesel generator (kW)
+        - discountRate : float
         - timeVariables : list of
            - timeStep : float, the time step of the simulation in hours
            - dgLifeSpan : int, the lifespan of the diesel generator in hours
@@ -31,7 +32,7 @@ def dgCost(powerTimeVector, discountRate, timeVariables, costVariables, fuelVari
     replacementCost, costPerHour, investmentCost = costVariables[0], costVariables[1], costVariables[2]
     fuelPrice, fuelCurve = fuelVariables[0], fuelVariables[1]
     
-    capitalCost = investmentCost
+    capitalCost = totalInvestmentCost(investmentCost, dgMaxPower)
     replacementCost = totalReplacementCost(lifespan, dgLifeTime, replacementCost, discountRate)
     nbWorkingHours = workingHours(powerTimeVector, timeStep, lifespan)
     operCost = operatingCost(nbWorkingHours, costPerHour, discountRate, lifespan)

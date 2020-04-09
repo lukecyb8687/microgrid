@@ -87,3 +87,14 @@ def salvageCost(hoursLeft, replacementCost, lifespan, machineLifeTime, discountR
 #    print(replacementCost, hoursLeft, lifespan, machineLifeTime, discountRate)
     salvageCost = (hoursLeft/machineLifeTime) * replacementCost / ((1 + discountRate)**(lifespan // (24 * 365)))
     return salvageCost    
+
+def totalInvestmentCost(investmentCost, dgMaxPower):
+    """
+    INPUT:
+        - investmentCost: float, the investment cost for a 1kW dg in $
+        - dgMaxPower: float, the maximum power output of the dg in kW
+    OUTPUT:
+        - totalCost: float, the total investment cost of the dg
+    """
+    totalCost = investmentCost * dgMaxPower
+    return totalCost
