@@ -168,6 +168,7 @@ def dispatchingStrategy(powerVariables, energyVariables,
             powerNeeded = netLoad - dischargingPow
             res = generatorManagement(powerNeeded, newBattStorage)
 #            res = generatorManagement(powerNeeded, newBattStorage, genMaxPow, battMaxInputPow, battMaxStorage, timeStep, strategy)
+            
 #        print(time.time() - debut)
         return res
 

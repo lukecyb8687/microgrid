@@ -6,7 +6,10 @@ Created on Tue Apr  7 12:58:54 2020
 """
 import numpy as np
 
-from costFunctionBuilder import costFunctionBuilder 
+from simulator.dispatching.dispatchingLoop import dispatchingLoop
+from simulator.costs.dollars.dollarCost import dollarCost
+from simulator.costs.carbon.carbonCost import carbonCost
+
 from platypus import NSGAII, Problem, Real
 
 def optimizer(fixedParameters, constraints):
@@ -87,17 +90,29 @@ def optimizer(fixedParameters, constraints):
     projectDuration = fixedParameters["projectDuration"]
     discountRate = fixedParameters["discountRate"]
     strategy = fixedParameters["strategy"]
+    pvPowerTimeVector = gridComponents["photovoltaic"]["powerTimeVector"]
+    normalizingFactor = 52
+    maxInputPowMulti = gridComponents["battery"]["maxInputPow"] 
+    maxOutputPowMulti = gridComponents["battery"]["maxOutputPow"] 
+    SOC_min_multi = gridComponents["battery"]["SOC_min"] 
     
     def costFunction(x):
-        from simulator.costs.dollars.dollarCost import dollarCost
-        from simulator.costs.carbon.carbonCost import carbonCost
         gridComponents["battery"]["maxStorage"] = x[0]
         gridComponents["diesel"]["maxPower"] = x[1]
         gridComponents["photovoltaic"]["maxPower"] = x[2]
+        
+        batteryInitialStorage = gridComponents["battery"]["initialStorage"] * x[0]
+        battMaxInputPow = maxInputPowMulti * x[0]
+        battMaxOutputPow = maxOutputPowMulti * x[0]
+        SOC_min = SOC_min_multi * x[0]
+        specifications = [x[0], x[1], battMaxInputPow, battMaxOutputPow, SOC_min]
+        
+        pvPowerVector = ((pvPowerTimeVector)/normalizingFactor)*(x[2])
+        netLoadVector = loadVector - pvPowerVector
+        dispatchingResult = dispatchingLoop(timeStep, netLoadVector, batteryInitialStorage, specifications, strategy)
 
-
-        return [dollarCost(gridComponents, timeStep, loadVector, projectDuration, discountRate, strategy),
-                carbonCost(gridComponents, timeStep, loadVector, projectDuration, discountRate, strategy)]
+        return [dollarCost(gridComponents, timeStep, loadVector, projectDuration, discountRate, strategy, dispatchingResult),
+                carbonCost(gridComponents, timeStep, loadVector, projectDuration, discountRate, strategy, dispatchingResult)]
     
     problem = Problem(3, 2)
     problem.types[:] = [Real(constraints["battery"]["lowerBound"], constraints["battery"]["upperBound"]), Real(constraints["diesel"]["lowerBound"], constraints["diesel"]["upperBound"]), Real(constraints["photovoltaic"]["lowerBound"], constraints["photovoltaic"]["upperBound"])]
