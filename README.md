@@ -81,7 +81,7 @@ When renewable energies don't suffice to provide enough energy to the grid, we m
 
 The case-study is exactly the same as the previous one, but this time, instead of turning on the dg at a lower pace, we turn it on at rate such that it both meets the load and the power needed to fully charge the battery. -->
 
-Whether we chose one strategy or the other, the dispatching algorithm will compute the amount of **energy stored in the battery** at each time step as well as the **functionning power of the dg** at each time step. It directly impacts the amount of _fuel consumed\_\_ as well as the \_lifetime of the battery_ for instance.
+Whether we chose one strategy or the other, the dispatching algorithm will compute the amount of **energy stored in the battery** at each time step as well as the **functioning power of the dg** at each time step. It directly impacts the amount of _fuel consumed\_\_ as well as the \_lifetime of the battery_ for instance.
 
 ## Costs
 
@@ -121,7 +121,7 @@ where :
 
 Just like for the battery, the diesel generator cost is **heavily impacted by the dispatch**. Indeed, depending on the strategy and the dispatching result, we can't reckon with the same number of **working hours** for the dg for instance. If the number of working hours is not the same, the lifetime is not the same and therefore the number of replacements is not the same. _The more replacements, the more expensive_.
 
-#### Photo Voltaic Pannels
+#### Photo Voltaic Panels
 
 The cost of the PV is calculated with the following formula :
 
@@ -138,7 +138,19 @@ where :
 
 #### Wind turbines
 
-**TO COMPLETE**
+The cost of the Wind Turbine is calculated with the following formula :
+
+```latex
+total cost = capital cost + (replacement cost - salvage cost) + operation & maintenance cost
+```
+
+where :
+
+- The capital cost is the inital purchase price of the Wind Turbine
+- The replacement cost is the cost of replacing the Wind Turbine at the end of its lifetime
+- The operational and maintenance cost is the annual cost of operating and maintaining the Wind Turbine
+- The salvage cost is the price at which you could expect to sell your Wind Turbine at the end of the project, considering their remaining lifetime
+
 
 ### Total cost 💸
 
@@ -155,6 +167,13 @@ The value of the output (kgCO2e/h) depends on:
 - The nominal power rating of the PV
 - The dispatch strategy being used
 
+The fixed parameters used in the function are:
+
+- CO2 emission per litre of diesel fuel consumed = 2.65 kgCO2e/L
+- Upstream factor for diesel generator = 1.2 (The upstream factor is taken into account for the entire lifecyle carbon footprint  of the diesel generator)
+- CO2 emission per manufacturing capacity of battery = 0.72 kgCO₂e/kWh
+- CO2 emission footprint of PV = 6gCO2e/kWh
+
 The carbon cost function will be the second function that our optimizer will aim at minimizing.
 
 # Optimizer
@@ -163,7 +182,9 @@ The optimizer is based on pre-existing python modules. Given a set of cost funct
 
 > I want to minimize the cost and the carbon dioxyde emissions. I have a limited number of disposable pVs and windmills, my dg cannot be bigger than x, but I have no limits regarding my battery. The optimizer will return the power specifications of each of the components so as to minimize the cost and the carbon dioxyde emissions.
 
-We used the **plapytus** module. It's user friendly and does not need a lot of parameters. It was the perfect "black box" for this project.
+We used the **plapytus** module. It's user friendly and does not need a lot of parameters. It was the perfect "black box" for this project. 
+
+The specific algorithm being used is the **NSGA-II** algorithm. It is a non-dominated sorted genetic algorithm. We tried this algorithm with different population sizes to compare the results. A graph is generated to show the set of feasible solutions resulting from the optimized variables (with both axis being the 2 objective functions to be minimized). From the graph, we are able to determine the pareto frontier, to show the possible trade-offs between the 2 objective functions.
 
 ## Cost functions
 
