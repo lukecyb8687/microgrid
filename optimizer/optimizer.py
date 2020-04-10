@@ -5,14 +5,56 @@ Created on Tue Apr  7 12:58:54 2020
 @author: bastien velitchkine
 """
 import numpy as np
-
-from simulator.dispatching.dispatchingLoop import dispatchingLoop
-from simulator.costs.dollars.dollarCost import dollarCost
-from simulator.costs.carbon.carbonCost import carbonCost
-
 from platypus import NSGAII, Problem, Real
 import time
+import matplotlib.pyplot as plt
+import pandas as pd
 
+#from simulator.dispatching.dispatchingLoop import dispatchingLoop
+#from simulator.costs.dollars.dollarCost import dollarCost
+#from simulator.costs.carbon.carbonCost import carbonCost
+
+def displayResults(netLoad, pvPowerVector, battStorageVector, genPowerVector, optResults):
+    """
+        INPUT:
+            - netLoad: np.array, the net load of the grid (kW)
+            - pvPowerVector: np.array, the power output of the pannels (kW)
+            - battStorageVector: np.array, the energy storage of the battery at each time step
+            - genPowerVector: np.array, the power output of the diesel generator (kW)
+            - optResults: list of lists of pareto optimums (floats) as returned by platypus
+        OUTPUT: 
+            - None
+        The function displays the time graphs of each of the vectors during the simulation duration
+    """
+    maxLength = 100
+    fig = plt.figure(figsize = (18, 10))
+    
+    plt.subplot(221)
+    plt.plot(np.arange(min([len(netLoad), maxLength])), netLoad[:min([len(netLoad), maxLength])], color = (78/255, 78/255, 78/255), label = "The net load over time")
+    plt.xlabel("Time steps")
+    plt.ylabel("The net load (kW)")
+    
+    plt.subplot(222)
+    plt.plot(np.arange(min([len(pvPowerVector), maxLength])), pvPowerVector[:min([len(pvPowerVector), maxLength])], color = (1, 145/255, 1), label = "The solar pannels output over time")
+    plt.xlabel("Time steps")
+    plt.ylabel("Power output of PVs (kW)")
+    
+    plt.subplot(223)
+    plt.plot(np.arange(min([len(battStorageVector), maxLength])), battStorageVector[:min([len(battStorageVector), maxLength])], color = (64/255, 128/255, 128/255), label = "The energy storage of the battery over time")
+    plt.xlabel("Time steps")
+    plt.ylabel("Energy storage of the battery (kWh)")
+    
+    plt.subplot(224)
+    plt.plot(np.arange(min([len(genPowerVector), maxLength])), genPowerVector[:min([len(genPowerVector), maxLength])], color = (255/255, 164/255, 72/255), label = "The dg power output over time")
+    plt.xlabel("Time steps")
+    plt.ylabel("DG power output (kW)")
+    plt.legend()
+    
+    fig = plt.figure(fisize= (8, 8))
+    plt.scatter([s.objectives[0] for s in optResults], [s.objectives[1] for s in optResults], alpha = 0.8, color = "purple", legend = "Optimization")
+    plt.xlabel("dollarCost ($)")
+    plt.ylabel("carbonCost (kg CO2e")
+    
 def optimizer(fixedParameters, constraints):
     """
             - fixedParameters: {gridComponents : {
@@ -98,6 +140,7 @@ def optimizer(fixedParameters, constraints):
     SOC_min_multi = gridComponents["battery"]["SOC_min"] 
     
     def costFunction(x):
+        global dispatchingResult, netLoadVector, pvPowerVector
         gridComponents["battery"]["maxStorage"] = x[0]
         gridComponents["diesel"]["maxPower"] = x[1]
         gridComponents["photovoltaic"]["maxPower"] = x[2]
@@ -123,14 +166,22 @@ def optimizer(fixedParameters, constraints):
     algorithm.run(1)
     
     # display the results
-    for solution in algorithm.result:
-        print(solution.objectives)
+#    for solution in algorithm.result:
+#        print(solution.objectives)
+    
+    displayResults(netLoadVector, pvPowerVector, dispatchingResult[0], dispatchingResult[1], [solution for solution in algorithm.result if solution.feasible])
         
 def optimizerTest():
     """
     A simple function to test the function `optimizer`
     """
-    debut = time.time()    
+    debut = time.time() 
+    
+    df = pd.read_csv("tests/testOuessant.csv", delimiter =",")
+#    print(df.head(3))
+    load = df["AC Primary Load"]
+    pvPower = df["Pv_Output"]
+    
     fixedParameters = {
                             "gridComponents": {
                                                         "battery" : {
@@ -158,12 +209,12 @@ def optimizerTest():
                                                                             "capitalCost": 500,
                                                                             "replacementCost": 500,
                                                                             "operationalCost": 0.03,
-                                                                            "powerTimeVector": np.array([abs(np.sin((2 * np.pi * hour/ 48))) for hour in np.arange(0, 24 * 365)]) # We suppose that the irradiance of the pannels is a sinusoide
+                                                                            "powerTimeVector": pvPower #np.array([abs(np.sin((2 * np.pi * hour/ 48))) for hour in np.arange(0, 24 * 365)]) # We suppose that the irradiance of the pannels is a sinusoide
                                                                         }
                                                     },
                                     
                                "timeStep" : 1,
-                               "loadVector" : np.array([abs(np.sin((2 * np.pi * hour/ 24 - (np.pi/2)))) for hour in np.arange(0, 24 * 365)]), # We model the load by a sinusoide with max demand at 6 am and 6pm
+                               "loadVector" : load, #np.array([abs(np.sin((2 * np.pi * hour/ 24 - (np.pi/2)))) for hour in np.arange(0, 24 * 365)]), # We model the load by a sinusoide with max demand at 6 am and 6pm
                                "projectDuration" : 25 * 365 * 24,
                                "discountRate": 0.0588,
                                "strategy" : "LF"
@@ -172,12 +223,12 @@ def optimizerTest():
     constraints = {
                                     "diesel":
                                                 {
-                                                        "upperBound": 100,
+                                                        "upperBound": 2000,
                                                         "lowerBound": 0,
                                                 },
                                      "battery":
                                                 {
-                                                        "upperBound": 100,
+                                                        "upperBound": 1000,
                                                         "lowerBound": 0,
                                                 },
                                      "photovoltaic":
