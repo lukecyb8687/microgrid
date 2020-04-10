@@ -18,7 +18,7 @@
   - V.A. Cost functions
   - V.B. Bounds and parameters
 - VI. Limits and extensions
-  - VI.A. Efficience
+  - VI.A. Efficiency
   - VI.B. Solver
   - VI.C. User interface
 - VII. Acknowledgements
@@ -254,11 +254,13 @@ algorithm.run(1)
 
 # VI. Limits and extensions
 
-## VI.A. Efficience
+## VI.A. Efficiency
 
 Unfortunately, the whole optimization process is **computationally expensive**. Indeed, after each iteration of the plytapus optimizer, the program has to compute the result of the _dispatching strategy_ (power output of the dg and battery storage during the whole) and then to iterate over multiple and long lists to compute the various costs (`dollarCost` and `carbonCost`).
 
 With this configuration, for a 1-year simulation and a 25-year project, with 1 run of the optimizer, it takes **more than 1 minute** to compute and display the results.
+
+One solution is to use the ressources of Google to run the optimizer (see Google Collaboratory for more info).
 
 ## VI.B. One solver only
 
