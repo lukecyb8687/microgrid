@@ -166,7 +166,7 @@ def optimizer(fixedParameters, constraints):
     problem.function = costFunction # lambda x: [sum(x), sum([val**2 for val in x])] #The function helped us see that the computational time of our cost functions was a problem
     
     algorithm = NSGAII(problem)
-    algorithm.run(2)
+    algorithm.run(1)
     
     displayResults(netLoadVector, pvPowerVector, dispatchingResult[0], dispatchingResult[1], [solution for solution in algorithm.result if solution.feasible])
         
