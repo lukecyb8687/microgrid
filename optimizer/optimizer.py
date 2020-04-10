@@ -10,9 +10,9 @@ import time
 import matplotlib.pyplot as plt
 import pandas as pd
 
-#from simulator.dispatching.dispatchingLoop import dispatchingLoop
-#from simulator.costs.dollars.dollarCost import dollarCost
-#from simulator.costs.carbon.carbonCost import carbonCost
+from simulator.dispatching.dispatchingLoop import dispatchingLoop
+from simulator.costs.dollars.dollarCost import dollarCost
+from simulator.costs.carbon.carbonCost import carbonCost
 
 def displayResults(netLoad, pvPowerVector, battStorageVector, genPowerVector, optResults):
     """
@@ -33,16 +33,19 @@ def displayResults(netLoad, pvPowerVector, battStorageVector, genPowerVector, op
     plt.plot(np.arange(min([len(netLoad), maxLength])), netLoad[:min([len(netLoad), maxLength])], color = (78/255, 78/255, 78/255), label = "The net load over time")
     plt.xlabel("Time steps")
     plt.ylabel("The net load (kW)")
+    plt.legend()
     
     plt.subplot(222)
     plt.plot(np.arange(min([len(pvPowerVector), maxLength])), pvPowerVector[:min([len(pvPowerVector), maxLength])], color = (1, 145/255, 1), label = "The solar pannels output over time")
     plt.xlabel("Time steps")
     plt.ylabel("Power output of PVs (kW)")
+    plt.legend()
     
     plt.subplot(223)
     plt.plot(np.arange(min([len(battStorageVector), maxLength])), battStorageVector[:min([len(battStorageVector), maxLength])], color = (64/255, 128/255, 128/255), label = "The energy storage of the battery over time")
     plt.xlabel("Time steps")
     plt.ylabel("Energy storage of the battery (kWh)")
+    plt.legend()
     
     plt.subplot(224)
     plt.plot(np.arange(min([len(genPowerVector), maxLength])), genPowerVector[:min([len(genPowerVector), maxLength])], color = (255/255, 164/255, 72/255), label = "The dg power output over time")
@@ -50,10 +53,10 @@ def displayResults(netLoad, pvPowerVector, battStorageVector, genPowerVector, op
     plt.ylabel("DG power output (kW)")
     plt.legend()
     
-    fig = plt.figure(fisize= (8, 8))
-    plt.scatter([s.objectives[0] for s in optResults], [s.objectives[1] for s in optResults], alpha = 0.8, color = "purple", legend = "Optimization")
+    fig = plt.figure(figsize= (8, 8))
+    plt.scatter([s.objectives[0] for s in optResults], [s.objectives[1] for s in optResults], alpha = 0.8, color = "purple", label = "Optimization")
     plt.xlabel("dollarCost ($)")
-    plt.ylabel("carbonCost (kg CO2e")
+    plt.ylabel("carbonCost (kg CO2e)")
     
 def optimizer(fixedParameters, constraints):
     """
@@ -163,11 +166,7 @@ def optimizer(fixedParameters, constraints):
     problem.function = costFunction # lambda x: [sum(x), sum([val**2 for val in x])] #The function helped us see that the computational time of our cost functions was a problem
     
     algorithm = NSGAII(problem)
-    algorithm.run(1)
-    
-    # display the results
-#    for solution in algorithm.result:
-#        print(solution.objectives)
+    algorithm.run(2)
     
     displayResults(netLoadVector, pvPowerVector, dispatchingResult[0], dispatchingResult[1], [solution for solution in algorithm.result if solution.feasible])
         
